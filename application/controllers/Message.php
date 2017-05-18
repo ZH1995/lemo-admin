@@ -12,22 +12,25 @@ class MessageController extends Yaf_Controller_Abstract {
      * Yaf支持直接把Yaf_Request_Abstract::getParam()得到的同名参数作为Action的形参
      */
     public function addMessageAction() {
-        $param = $this->getRequest()->getParams();
-        $this->getView()->assign("userName", $param["userName"]);
+        $session = Yaf_Session::getinstance();
+        $this->getView()->assign("userInfo", $session->userInfo);
         $this->getView()->display("message/addMessage.phtml");
         return FALSE;
     }
 
     public function updateMessageAction() {
-
-        $param = $this->getRequest()->getParams();
-        $this->getView()->assign("userName", $param["userName"]);
+        # 获取表单数据
         $messageId = $this->getRequest()->getPost("messageId");
 
+        # 获取缓存用户信息
+        $session = Yaf_Session::getinstance();
+        $this->getView()->assign("userInfo", $session->userInfo);
+
+        # 查数据库
         $messageModel = new MessageModel();
         $messageInfo = $messageModel->getMessageInfoById($messageId);
-
         if (empty($messageInfo)) {
+            $this->getView()->assign("msg", "文章不存在");
             $this->getView()->display("error/error.phtml");
         } else {
             $this->getView()->assign("messageId", $messageId);
@@ -38,20 +41,21 @@ class MessageController extends Yaf_Controller_Abstract {
     }
 
     public function selectMessageAction() {
-        $param = $this->getRequest()->getParams();
-        $this->getView()->assign("userName", $param["userName"]);
+        $session = Yaf_Session::getinstance();
+        $this->getView()->assign("userInfo", $session->userInfo);
         $this->getView()->display("message/selectMessage.phtml");
         return FALSE;
     }
 
     public function menuAction() {
-        $param = $this->getRequest()->getParams();
-        $this->getView()->assign("userName", $param["userName"]);
+        $session = Yaf_Session::getinstance();
+        $this->getView()->assign("userInfo", $session->userInfo);
         $this->getView()->display("menu/menu.phtml");
         return FALSE;
     }
 
     public function submitAddMessageAction() {
+        # 获取表单
         $messageTitle = $this->getRequest()->getPost("messageTitle");
         $coverPic = $this->getRequest()->getPost("coverPic");
         $authorName = $this->getRequest()->getPost("authorName");
@@ -59,11 +63,15 @@ class MessageController extends Yaf_Controller_Abstract {
         $tagId = $this->getRequest()->getPost("tagId");
         $messageContent = $this->getRequest()->getPost("messageContent");
 
+        # 获取用户信息缓存
+        $session = Yaf_Session::getinstance();
+        $this->getView()->assign("userInfo", $session->userInfo);
+
+        # 添加入库
         $messageModel = new MessageModel();
         $res = $messageModel->addMessage($messageTitle, $coverPic, $authorName, $authorImg, $tagId, $messageContent);
-        $param = $this->getRequest()->getParams();
-        $this->getView()->assign("userName", $param["userName"]);
         if (empty($res)) {
+            $this->getView()->assign("msg", "添加文章失败，请联系57743532@qq.com");
             $this->getView()->display("error/error.phtml");
         } else {
             $this->getView()->display("menu/menu.phtml");
@@ -72,6 +80,7 @@ class MessageController extends Yaf_Controller_Abstract {
     }
 
     public function submitUpdateMessageAction() {
+        # 获取表单数据
         $messageTitle = $this->getRequest()->getPost("messageTitle");
         $coverPic = $this->getRequest()->getPost("coverPic");
         $authorName = $this->getRequest()->getPost("authorName");
@@ -80,14 +89,19 @@ class MessageController extends Yaf_Controller_Abstract {
         $weight = $this->getRequest()->getPost("weight");
         $messageContent = $this->getRequest()->getPost("messageContent");
 
+        # 获取参数
         $param = $this->getRequest()->getParams();
         $messageId = $param["messageId"];
 
+        # 获取用户信息缓存
+        $session = Yaf_Session::getinstance();
+        $this->getView()->assign("userInfo", $session->userInfo);
+
+        # 更新数据库
         $messageModel = new MessageModel();
         $res = $messageModel->updateMessage($messageTitle, $coverPic, $authorName, $authorImg, $tagId, $messageContent, $weight, $messageId);
-
-        $this->getView()->assign("userName", $param["userName"]);
         if (empty($res)) {
+            $this->getView()->assign("msg", "更新文章失败，请联系57743532@qq.com");
             $this->getView()->display("error/error.phtml");
         } else {
             $this->getView()->display("menu/menu.phtml");

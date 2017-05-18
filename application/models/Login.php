@@ -33,10 +33,13 @@ class LoginModel{
         return $result;
     }
 
-    public function getUserNameByPhoneAndPwd($phoneNumber, $password) {
-        $sql = "select uname from tblUser where phone_number=$phoneNumber and password=$password";
+    public function getUserInfoByPhoneAndPwd($phoneNumber, $password) {
+        $sql = "select uname, uid, level from tblUser where phone_number=$phoneNumber and password=$password";
         $res = $this->querySql($sql);
-        $userName = $res[0]["uname"];
-        return $userName;
+        return array(
+            "userName" => $res[0]["uname"],
+            "uid" => $res[0]["uid"],
+            "level" => $res[0]["level"],
+        );
     }
 }

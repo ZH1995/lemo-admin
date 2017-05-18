@@ -16,15 +16,38 @@ class LoginController extends Yaf_Controller_Abstract {
         $phoneNumber = $this->getRequest()->getPost("phoneNumber");
         $password = $this->getRequest()->getPost("password");
 
-        $loginModel = new LoginModel();
-        $userName = $loginModel->getUserNameByPhoneAndPwd($phoneNumber, $password);
-
-        if (empty($userName)) {
-            $this->getView()->display("home/home.phtml");
-        } else {
-            $this->getView()->assign("userName", $userName);
-            $this->getView()->display("menu/menu.phtml");
+        # 校验参数是否合法
+        if (!preg_match("/^\d*$/", $phoneNumber) || strlen($phoneNumber) != 11) {
+            $this->getView()->assign("msg", "手机号输入错误");
+            $this->getView()->display("error/error.phtml");
+            return False;
         }
+        if (!preg_match("/^\w*$/", $password) || strlen($password) < 6 || strlen($password) > 12) {
+            $this->getView()->assign("msg", "密码输入错误");
+            $this->getView()->display("error/error.phtml");
+            return False;
+        }
+
+        $loginModel = new LoginModel();
+        $userInfo = $loginModel->getUserInfoByPhoneAndPwd($phoneNumber, $password);
+
+        # 验权
+        if (empty($userInfo["uid"])) {
+            $this->getView()->assign("msg", "用户不存在");
+            $this->getView()->display("error/error.phtml");
+            return False;
+        }
+        if ($userInfo["level"] == 0) {
+            $this->getView()->assign("msg", "权限不够，请联系57435302@qq.com开通权限");
+            $this->getView()->display("error/error.phtml");
+            return False;
+        }
+
+        # 缓存用户信息
+        $session = Yaf_Session::getinstance();
+        $session->userInfo = $userInfo;
+        $this->getView()->assign("userInfo", $userInfo);
+        $this->getView()->display("menu/menu.phtml");
         return FALSE;
     }
 }

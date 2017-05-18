@@ -17,8 +17,10 @@
             <div>
                 <ul class="nav navbar-nav">
                     <li class="active"><a href="#">首页</a></li>
-                    <li><a href="<?= BASE_URL?>index.php/index/message/addMessage/userName/<?php echo $userName?>">添加文章</a></li>
-                    <li><a href="<?= BASE_URL?>index.php/index/message/selectMessage/userName/<?php echo $userName?>">更新文章</a></li>
+                    <li><a href="<?= BASE_URL?>index.php/index/message/addMessage">添加文章</a></li>
+                    <?php if ($userInfo["level"] == 3) { ?>
+                        <li><a href="<?= BASE_URL?>index.php/index/message/selectMessage">更新文章</a></li>
+                    <?php } ?>
                 </ul>
             </div>
         </div>
@@ -26,7 +28,7 @@
 
     <div class="jumbotron">
         <div class="container">
-            <h1>Hello,<?php echo $userName?>!</h1>
+            <h1>Hello,<?php echo $userInfo["userName"]?>!</h1>
         </div>
     </div>
 </body>

@@ -15,9 +15,11 @@
             </div>
             <div>
                 <ul class="nav navbar-nav">
-                    <li><a href="<?= BASE_URL?>index.php/index/message/menu/userName/<?php echo $userName?>">首页</a></li>
-                    <li><a href="<?= BASE_URL?>index.php/index/message/addMessage/userName/<?php echo $userName?>">添加文章</a></li>
-                    <li class="active"><a href="<?= BASE_URL?>index.php/index/message/selectMessage/userName/<?php echo $userName?>">更新文章</a></li>
+                    <li><a href="<?= BASE_URL?>index.php/index/message/menu">首页</a></li>
+                    <li><a href="<?= BASE_URL?>index.php/index/message/addMessage">添加文章</a></li>
+                    <?php if ($userInfo["level"] == 3) { ?>
+                        <li class="active"><a href="<?= BASE_URL?>index.php/index/message/selectMessage">更新文章</a></li>
+                    <?php } ?>
                 </ul>
             </div>
         </div>
@@ -25,12 +27,12 @@
 
     <div class="jumbotron">
         <div class="container">
-            <h1>Hello,<?php echo $userName?>!</h1>
+            <h1>Hello,<?php echo $userInfo["userName"]?>!</h1>
         </div>
     </div>
 
 
-    <form action="<?= BASE_URL?>index.php/index/message/submitUpdateMessage/userName/<?php echo $userName?>/messageId/<?php echo $messageId?>" method="post" class="form-horizontal" role="form">
+    <form action="<?= BASE_URL?>index.php/index/message/submitUpdateMessage/messageId/<?php echo $messageId?>" method="post" class="form-horizontal" role="form">
         <div class="form-group">
             <label for="name" class="col-sm-2 control-label">标题</label>
             <div class="col-sm-10">
